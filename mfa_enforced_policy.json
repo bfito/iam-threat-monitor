@@ -2,9 +2,22 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "RequireMFA",
+      "Sid": "AllowAllUsersToListAccounts",
+      "Effect": "Allow",
+      "Action": ["iam:ListAccountAliases", "iam:ListUsers"],
+      "Resource": "*"
+    },
+    {
+      "Sid": "BlockMostAccessWithoutMFA",
       "Effect": "Deny",
-      "Action": "*",
+      "NotAction": [
+        "iam:CreateVirtualMFADevice",
+        "iam:EnableMFADevice",
+        "iam:GetUser",
+        "iam:ListMFADevices",
+        "iam:ListUsers",
+        "iam:ListVirtualMFADevices"
+      ],
       "Resource": "*",
       "Condition": {
         "BoolIfExists": {
