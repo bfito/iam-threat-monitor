@@ -30,7 +30,7 @@ aws iam attach-group-policy \
 # Create login profile to simulate login (triggers CloudTrail ConsoleLogin)
 aws iam create-login-profile \
   --user-name "$TEST_IAM_USERNAME" \
-  --password 'TempPassword123!' \
+  --password 'TempPassword123!' \ #This password is no longer valid. 
   --password-reset-required
 
 echo "✅ Test IAM user '$TEST_IAM_USERNAME' created and added to group '$TEST_IAM_GROUP_NAME'."
