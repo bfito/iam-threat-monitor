@@ -22,5 +22,18 @@ This project demonstrates how to:
 ## ✅ Outcome
 Demonstrates hands-on IAM security, automation, and threat detection logic for job-readiness in Cloud Support or Security.
 
+## Developer Notes & Learning Curve
+
+delete_test_user.sh #This script started as a simple AWS CLI test — but through iteration, it became a production-grade IAM user cleanup utility.
+
+Key things I learned:
+- AWS doesn't allow IAM users to be deleted unless they are fully detached from groups, policies, and access keys
+- Profiles don't own IAM users — they’re just authentication wrappers
+- CLI scripting helped me deeply understand IAM dependencies and errors like DeleteConflict
+- Building a reusable, safe script required input validation, preview modes, and protection for critical accounts
+
+I plan to revisit this with a Terraform-based approach next, as part of my infrastructure-as-code learning path.
+
+
 ## 🔗 License
 MIT
