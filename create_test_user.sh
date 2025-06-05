@@ -1,37 +1,48 @@
 #!/bin/bash
+# Secure script to create an IAM test user, assign to group, attach policy, and remind about MFA
 
-# IAM Test User Setup Script for Security Monitoring Demo
+TEST_USER_NAME=$1
+TEST_GROUP_NAME="MFAEnforcedTestGroup"
 
-TEST_IAM_USERNAME=$1
-TEST_IAM_GROUP_NAME="TestSecuredGroup"
-
-if [ -z "$TEST_IAM_USERNAME" ]; then
-  echo "Usage: $0 <test-iam-username>"
+if [ -z "$TEST_USER_NAME" ]; then
+  echo "Usage: $0 <test-user-name>"
   exit 1
 fi
 
-# Create IAM test user
-aws iam create-user --user-name "$TEST_IAM_USERNAME"
+# === Variables ===
+TEST_USERNAME=$1
+TEST_GROUP_NAME="TestSecuredGroup"
+AWS_PROFILE_NAME="my-secure-profile"  # <-- Make sure to configure this profile using `aws configure --profile my-secure-profile`
 
-# Create test IAM group if it doesn't exist
-aws iam get-group --group-name "$TEST_IAM_GROUP_NAME" >/dev/null 2>&1 || \
-aws iam create-group --group-name "$TEST_IAM_GROUP_NAME"
+# === Create user ===
+aws iam create-user \
+  --user-name "$TEST_USERNAME" \
+  --profile "$AWS_PROFILE_NAME"
 
-# Add test user to test group
-aws iam add-user-to-group \
-  --user-name "$TEST_IAM_USERNAME" \
-  --group-name "$TEST_IAM_GROUP_NAME"
+# === Create group if it doesn't exist ===
+aws iam get-group \
+  --group-name "$TEST_GROUP_NAME" \
+  --profile "$AWS_PROFILE_NAME" > /dev/null 2>&1
 
-# Attach a read-only policy to the test group
+if [ $? -ne 0 ]; then
+  aws iam create-group \
+    --group-name "$TEST_GROUP_NAME" \
+    --profile "$AWS_PROFILE_NAME"
+fi
+
+# === Attach ReadOnlyAccess policy to the group ===
 aws iam attach-group-policy \
-  --group-name "$TEST_IAM_GROUP_NAME" \
-  --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess
+  --group-name "$TEST_GROUP_NAME" \
+  --policy-arn arn:aws:iam::aws:policy/ReadOnlyAccess \
+  --profile "$AWS_PROFILE_NAME"
 
-# Create login profile to simulate login (triggers CloudTrail ConsoleLogin)
-aws iam create-login-profile \
-  --user-name "$TEST_IAM_USERNAME" \
-  --password 'TempPassword123!' \ #This password is no longer valid. 
-  --password-reset-required
+# === Add user to group ===
+aws iam add-user-to-group \
+  --user-name "$TEST_USERNAME" \
+  --group-name "$TEST_GROUP_NAME" \
+  --profile "$AWS_PROFILE_NAME"
 
-echo "✅ Test IAM user '$TEST_IAM_USERNAME' created and added to group '$TEST_IAM_GROUP_NAME'."
-echo "🔐 Temporary password set. Assign MFA via AWS Console if required."
+# === Output MFA reminder ===
+echo "✅ Test IAM user '$TEST_USERNAME' created and added to group '$TEST_GROUP_NAME'."
+echo "🔐 Temporary password must be set manually via AWS Console if needed."
+echo "🚨 Don’t forget to enforce or assign MFA for '$TEST_USERNAME'."
