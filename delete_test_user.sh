@@ -1,5 +1,11 @@
 #!/bin/bash
-# Interactive IAM user deletion script with numbered user selection
+# Interactive IAM user deletion script with protected user handling
+
+# Define protected IAM usernames
+PROTECTED_USERS=(
+  "admin-user"
+  # "critical-user-to-be-added"
+)
 
 echo "Fetching IAM users..."
 readarray -t USERS < <(aws iam list-users --query 'Users[*].UserName' --output text | tr '\t' '\n')
@@ -9,11 +15,27 @@ if [ ${#USERS[@]} -eq 0 ]; then
   exit 1
 fi
 
+echo ""
 echo "Select a user to delete:"
 for i in "${!USERS[@]}"; do
-  printf "%3d) %s\n" $((i + 1)) "${USERS[$i]}"
+  username="${USERS[$i]}"
+  is_protected=false
+
+  for protected in "${PROTECTED_USERS[@]}"; do
+    if [[ "$username" == "$protected" ]]; then
+      is_protected=true
+      break
+    fi
+  done
+
+  if $is_protected; then
+    printf "%3d) \e[31m%s (protected – cannot be deleted)\e[0m\n" $((i + 1)) "$username"
+  else
+    printf "%3d) %s\n" $((i + 1)) "$username"
+  fi
 done
 
+echo ""
 read -p "Enter the number of the user to delete: " USER_INDEX
 
 if ! [[ "$USER_INDEX" =~ ^[0-9]+$ ]] || [ "$USER_INDEX" -lt 1 ] || [ "$USER_INDEX" -gt "${#USERS[@]}" ]; then
@@ -22,6 +44,14 @@ if ! [[ "$USER_INDEX" =~ ^[0-9]+$ ]] || [ "$USER_INDEX" -lt 1 ] || [ "$USER_INDE
 fi
 
 TEST_USERNAME="${USERS[$((USER_INDEX - 1))]}"
+
+# Safety check for protected users
+for protected in "${PROTECTED_USERS[@]}"; do
+  if [[ "$TEST_USERNAME" == "$protected" ]]; then
+    echo "Refusing to delete protected user '$TEST_USERNAME'."
+    exit 1
+  fi
+done
 
 read -p "Enter AWS CLI profile to use (default: default): " AWS_PROFILE_NAME
 AWS_PROFILE_NAME=${AWS_PROFILE_NAME:-default}
@@ -117,12 +147,3 @@ aws iam delete-user \
   --profile "$AWS_PROFILE_NAME"
 
 echo "User '$TEST_USERNAME' deleted successfully."
-
-echo "Deleting user..."
-aws iam delete-user \
-  --user-name "$TEST_USERNAME" \
-  --profile "$AWS_PROFILE_NAME"
-
-echo " User '$TEST_USERNAME' deleted successfully."
-
-# === Console confirmation of deletion ===
