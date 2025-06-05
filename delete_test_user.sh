@@ -117,3 +117,12 @@ aws iam delete-user \
   --profile "$AWS_PROFILE_NAME"
 
 echo "User '$TEST_USERNAME' deleted successfully."
+
+echo "Deleting user..."
+aws iam delete-user \
+  --user-name "$TEST_USERNAME" \
+  --profile "$AWS_PROFILE_NAME"
+
+echo " User '$TEST_USERNAME' deleted successfully."
+
+# === Console confirmation of deletion ===
