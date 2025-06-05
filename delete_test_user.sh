@@ -2,7 +2,7 @@
 # Interactive IAM user deletion script with numbered user selection
 
 echo "Fetching IAM users..."
-readarray -t USERS < <(aws iam list-users --query 'Users[*].UserName' --output text)
+readarray -t USERS < <(aws iam list-users --query 'Users[*].UserName' --output text | tr '\t' '\n')
 
 if [ ${#USERS[@]} -eq 0 ]; then
   echo "No IAM users found."
