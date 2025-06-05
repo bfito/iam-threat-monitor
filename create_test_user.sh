@@ -1,18 +1,16 @@
 #!/bin/bash
-# Secure script to create an IAM test user, assign to group, attach policy, and remind about MFA
-
-TEST_USER_NAME=$1
-TEST_GROUP_NAME="MFAEnforcedTestGroup"
-
-if [ -z "$TEST_USER_NAME" ]; then
-  echo "Usage: $0 <test-user-name>"
-  exit 1
-fi
+# Secure script to create an IAM test user, assign to a group, attach policy, and remind about MFA
 
 # === Variables ===
 TEST_USERNAME=$1
-TEST_GROUP_NAME="TestSecuredGroup"
-AWS_PROFILE_NAME="my-secure-profile"  # <-- Make sure to configure this profile using `aws configure --profile my-secure-profile`
+TEST_GROUP_NAME="MFAEnforcedTestGroup"
+AWS_PROFILE_NAME="my-secure-profile"  # Make sure to configure this profile using: aws configure --profile my-secure-profile
+
+# === Check input ===
+if [ -z "$TEST_USERNAME" ]; then
+  echo "Usage: $0 <test-iam-username>"
+  exit 1
+fi
 
 # === Create user ===
 aws iam create-user \
