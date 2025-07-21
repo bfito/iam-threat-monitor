@@ -1,4 +1,4 @@
-# AWS IAM + Login Monitoring Project (Free Tier Friendly)
+# AWS IAM Automation & Threat Detection (MFA + EventBridge)
 
 ## Overview
 This project demonstrates how to:
@@ -34,6 +34,76 @@ Key things I learned:
 
 I plan to revisit this with a Terraform-based approach next, as part of my infrastructure-as-code learning path.
 
+=======
+### 🔧 Prerequisites
 
-## License
+- AWS CLI installed and configured with admin-level permissions
+- AWS account with CloudTrail and EventBridge enabled
+- Bash-compatible terminal (Linux, macOS, WSL, etc.)
+
+---
+
+### ✅ Recommended Quick Start (All-in-One)
+
+```bash
+chmod +x main_setup.sh
+./main_setup.sh
+
+This script automates the following:
+
+    Creates a test IAM user
+
+    Attaches the MFA-required policy
+
+    Creates an EventBridge rule to detect logins without MFA
+
+🪛 Manual Setup (Optional: Step-by-Step)
+
+    Create user
+
+./create_test_user.sh yourusername
+
+Attach MFA-required policy
+
+aws iam put-user-policy \
+  --user-name yourusername \
+  --policy-name EnforceMFA \
+  --policy-document file://mfa_enforced_policy.json
+
+Set up EventBridge rule
+
+    aws events put-rule \
+      --name ConsoleLoginWithoutMFA \
+      --event-pattern file://eventbridge_rule_console_login.json \
+      --event-bus-name default
+
+    (Optional) Link the rule to an SNS topic to get email alerts
+
+🧹 Cleanup
+
+To delete the user and related resources:
+
+./delete_test_user.sh yourusername
+
+💡 Learning Highlights
+
+    IAM policy logic with MFA enforcement
+
+    AWS login monitoring with EventBridge
+
+    Shell scripting with AWS CLI
+
+    IAM lifecycle automation and cleanup
+
+
+📘 Future Plans
+
+    Rebuild this using Terraform for full infrastructure-as-code
+
+    Extend with CloudWatch logs or SNS alerts
+
+    Add support for group-based policy enforcement
+
+📜 License
 MIT
+
