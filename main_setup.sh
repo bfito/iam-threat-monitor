@@ -1,22 +1,42 @@
 #!/bin/bash
 
-# === Set Profile and Username ===
-PROFILE="my-secure-profile"
-USERNAME="test-iam-monitor-user"
+# -----------------------------
+# Usage: ./main_setup.sh <username> [policy-name]
+# If no policy name is given, a unique one will be generated.
+# -----------------------------
 
-# === Start Setup ===
-echo "Starting IAM Threat Monitor setup..."
+# 1. Get username from first argument
+USERNAME="$1"
 
-# Step 1: Create Groups and Attach Policies
-./create_groups_and_policies.sh "$PROFILE"
+# 2. If username not given, exit
+if [[ -z "$USERNAME" ]]; then
+  echo "❌ Error: You must provide a username."
+  echo "Usage: ./main_setup.sh <username> [policy-name]"
+  exit 1
+fi
 
-# Step 2: Create IAM User and Add to Group
-./create_test_user.sh "$USERNAME" "$PROFILE"
+# 3. Use provided policy name or generate a unique one
+if [[ -z "$2" ]]; then
+  TIMESTAMP=$(date +%s)
+  POLICY_NAME="MFAEnforcedPolicy-${USERNAME}-${TIMESTAMP}"
+else
+  POLICY_NAME="$2"
+fi
 
-# Step 3: Setup EventBridge Rule
-./setup_eventbridge_rule.sh "$PROFILE"
+echo "🔧 Creating IAM user: $USERNAME"
+aws iam create-user --user-name "$USERNAME"
 
-# === Final Output ===
-echo "Setup complete."
-echo "Reminder: Enable MFA for '$USERNAME' manually via:"
-echo "https://console.aws.amazon.com/iam/home#/users/$USERNAME?section=security_credentials"
+echo "🔐 Attaching MFA enforcement policy: $POLICY_NAME"
+aws iam put-user-policy \
+  --user-name "$USERNAME" \
+  --policy-name "$POLICY_NAME" \
+  --policy-document file://mfa_enforced_policy.json
+
+echo "🔑 Creating login profile (temporary password)"
+aws iam create-login-profile \
+  --user-name "$USERNAME" \
+  --password 'TempPass123!' \
+  --password-reset-required
+
+echo "✅ Done. User '$USERNAME' created and policy '$POLICY_NAME' applied."
+
