@@ -1,45 +1,33 @@
 # AWS IAM Automation & Threat Detection (MFA + EventBridge)
 
-## Overview
+## 🔍 Overview
 This project demonstrates how to:
-- Set up secure IAM users and groups
-- Enforce MFA using policy conditions
-- Monitor login events via EventBridge
-- Automate IAM setup using AWS CLI
-- Stay entirely within AWS Free Tier
 
-## Files
-- `mfa_enforced_policy.json` – Denies all actions unless MFA is present
-- `create_user.sh` – Bash script to create and assign users
-- `eventbridge_rule_console_login.json` – EventBridge rule for detecting console logins without MFA
+🔹 Set up secure IAM users and groups  
+🔹 Enforce MFA using policy conditions  
+🔹 Monitor login events via EventBridge  
+🔹 Automate IAM setup using AWS CLI  
+🔹 Stay entirely within AWS Free Tier  
 
-## Setup Instructions
-1. Run `create_user.sh newuser`
-2. Apply `mfa_enforced_policy.json` to test user or group
-3. Create EventBridge rule using the event pattern in `eventbridge_rule_console_login.json`
-4. Link rule to SNS topic to receive email alerts
+---
 
-## Outcome
-Demonstrates hands-on IAM security, automation, and threat detection logic for job-readiness in Cloud Support or Security.
+## 📁 Files
 
-## Developer Notes & Learning Curve
+🔹 `mfa_enforced_policy.json` – Denies all actions unless MFA is present  
+🔹 `create_user.sh` – Bash script to create and assign users  
+🔹 `eventbridge_rule_console_login.json` – EventBridge rule for detecting console logins without MFA  
+🔹 `main_setup.sh` – Automates full IAM + policy + alert setup  
+🔹 `delete_test_user.sh` – Safely removes IAM user and associated policies  
 
-### delete_test_user.sh #This script started as a simple AWS CLI test — but through iteration, it became a production-grade IAM user cleanup utility.
+---
 
-Key things I learned:
-- AWS doesn't allow IAM users to be deleted unless they are fully detached from groups, policies, and access keys
-- Profiles don't own IAM users — they’re just authentication wrappers
-- CLI scripting helped me deeply understand IAM dependencies and errors like DeleteConflict
-- Building a reusable, safe script required input validation, preview modes, and protection for critical accounts
+## 🧰 Setup Instructions
 
-I plan to revisit this with a Terraform-based approach next, as part of my infrastructure-as-code learning path.
-
-=======
 ### 🔧 Prerequisites
 
-- AWS CLI installed and configured with admin-level permissions
-- AWS account with CloudTrail and EventBridge enabled
-- Bash-compatible terminal (Linux, macOS, WSL, etc.)
+🔹 AWS CLI installed and configured with admin-level permissions  
+🔹 AWS account with CloudTrail and EventBridge enabled  
+🔹 Bash-compatible terminal (Linux, macOS, WSL, etc.)  
 
 ---
 
@@ -51,34 +39,30 @@ chmod +x main_setup.sh
 
 This script automates the following:
 
-    Creates a test IAM user
-
-    Attaches the MFA-required policy
-
-    Creates an EventBridge rule to detect logins without MFA
-
+🔹 Creates a test IAM user
+🔹 Attaches the MFA-required policy
+🔹 Creates an EventBridge rule to detect logins without MFA
 🪛 Manual Setup (Optional: Step-by-Step)
 
-    Create user
+🔹 Create user
 
 ./create_test_user.sh yourusername
 
-Attach MFA-required policy
+🔹 Attach MFA-required policy
 
 aws iam put-user-policy \
   --user-name yourusername \
   --policy-name EnforceMFA \
   --policy-document file://mfa_enforced_policy.json
 
-Set up EventBridge rule
+🔹 Set up EventBridge rule
 
-    aws events put-rule \
-      --name ConsoleLoginWithoutMFA \
-      --event-pattern file://eventbridge_rule_console_login.json \
-      --event-bus-name default
+aws events put-rule \
+  --name ConsoleLoginWithoutMFA \
+  --event-pattern file://eventbridge_rule_console_login.json \
+  --event-bus-name default
 
-    (Optional) Link the rule to an SNS topic to get email alerts
-
+🔹 (Optional) Link the rule to an SNS topic to get email alerts
 🧹 Cleanup
 
 To delete the user and related resources:
@@ -87,23 +71,27 @@ To delete the user and related resources:
 
 💡 Learning Highlights
 
-    IAM policy logic with MFA enforcement
+🔹 IAM policy logic with MFA enforcement
+🔹 AWS login monitoring with EventBridge
+🔹 Shell scripting with AWS CLI
+🔹 IAM lifecycle automation and cleanup
+🔹 Realized the difference between IAM policy types via CLI:
 
-    AWS login monitoring with EventBridge
+    🔹 aws iam put-user-policy → Inline policy (user-only)
 
-    Shell scripting with AWS CLI
+    🔹 aws iam create-policy → Reusable customer-managed policy
 
-    IAM lifecycle automation and cleanup
+    🔹 aws iam attach-user-policy → Attaches a managed policy to a user
 
+    🔹 aws iam list-policies --scope AWS → Lists AWS-managed (read-only) policies
+
+    🔹 --permissions-boundary → Sets permission limits using a managed policy
 
 📘 Future Plans
 
-    Rebuild this using Terraform for full infrastructure-as-code
-
-    Extend with CloudWatch logs or SNS alerts
-
-    Add support for group-based policy enforcement
-
+🔹 Rebuild this using Terraform for full infrastructure-as-code
+🔹 Extend with CloudWatch logs or SNS alerts
+🔹 Add support for group-based policy enforcement
 📜 License
-MIT
 
+MIT
