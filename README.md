@@ -75,16 +75,11 @@ To delete the user and related resources:
 🔹 AWS login monitoring with EventBridge
 🔹 Shell scripting with AWS CLI
 🔹 IAM lifecycle automation and cleanup
-🔹 Realized the difference between IAM policy types via CLI:
-
+🔹 Studied the differences between IAM policy types via CLI:    
     🔹 aws iam put-user-policy → Inline policy (user-only)
-
     🔹 aws iam create-policy → Reusable customer-managed policy
-
     🔹 aws iam attach-user-policy → Attaches a managed policy to a user
-
     🔹 aws iam list-policies --scope AWS → Lists AWS-managed (read-only) policies
-
     🔹 --permissions-boundary → Sets permission limits using a managed policy
 
 📘 Future Plans
