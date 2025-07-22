@@ -27,15 +27,36 @@ aws iam put-user-policy \
   --policy-document file://mfa_enforced_policy.json
 
 echo "🔑 Creating login profile (temporary password)..."
+TEMP_PASSWORD=$(openssl rand -base64 12)
 CREATE_PROFILE_OUTPUT=$(aws iam create-login-profile \
   --user-name "$USERNAME" \
-  --password "TempPass123!" \
+  --password "$TEMP_PASSWORD" \
   --password-reset-required)
 
+# Redact sensitive login profile info
 echo "$CREATE_PROFILE_OUTPUT" | sed -E \
   -e 's|"UserName": "[^"]+"|"UserName": "'"$USERNAME"'"|' \
   -e 's|"CreateDate": "[^"]+"|"CreateDate": "REDACTED"|' \
   -e 's|"PasswordResetRequired": [^}]+|"PasswordResetRequired": true|'
 
-echo "✅ Done. User '$USERNAME' created and policy '$POLICY_NAME' applied."
+echo "🔐 Temporary password for '$USERNAME': $TEMP_PASSWORD"
+
+# Check if the EventBridge rule already exists
+if ! aws events list-rules --name-prefix ConsoleLoginWithoutMFA | grep -q "ConsoleLoginWithoutMFA"; then
+  echo "📡 Creating EventBridge rule to detect logins without MFA..."
+  aws events put-rule \
+    --name ConsoleLoginWithoutMFA \
+    --event-pattern file://eventbridge_rule_console_login.json \
+    --event-bus-name default
+
+  if [[ $? -eq 0 ]]; then
+    echo "✅ EventBridge rule created successfully."
+  else
+    echo "❌ Failed to create EventBridge rule."
+  fi
+else
+  echo "ℹ️ EventBridge rule already exists. Skipping creation."
+fi
+
+echo "✅ Done. User '$USERNAME' created, MFA policy applied, and login monitoring rule checked."
 
