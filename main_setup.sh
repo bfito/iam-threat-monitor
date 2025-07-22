@@ -1,30 +1,24 @@
 #!/bin/bash
+set -e
 
-# -----------------------------
-# Usage: ./main_setup.sh <username> [policy-name]
-# If no policy name is given, a unique one will be generated.
-# -----------------------------
+USERNAME=$1
 
-# 1. Get username from first argument
-USERNAME="$1"
-
-# 2. If username not given, exit
 if [[ -z "$USERNAME" ]]; then
-  echo "❌ Error: You must provide a username."
-  echo "Usage: ./main_setup.sh <username> [policy-name]"
+  echo "❌ Error: No username provided."
+  echo "Usage: ./main_setup.sh <username>"
   exit 1
 fi
 
-# 3. Use provided policy name or generate a unique one
-if [[ -z "$2" ]]; then
-  TIMESTAMP=$(date +%s)
-  POLICY_NAME="MFAEnforcedPolicy-${USERNAME}-${TIMESTAMP}"
-else
-  POLICY_NAME="$2"
-fi
+POLICY_NAME="MFAEnforcedPolicy-$USERNAME-$(date +%s)"
 
-echo "🔧 Creating IAM user: $USERNAME"
-aws iam create-user --user-name "$USERNAME"
+echo "🔧 Creating IAM user: $USERNAME..."
+CREATE_USER_OUTPUT=$(aws iam create-user --user-name "$USERNAME")
+
+# Redact sensitive info before displaying
+echo "$CREATE_USER_OUTPUT" | sed -E \
+  -e 's|"UserId": "[^"]+"|"UserId": "REDACTED"|' \
+  -e 's|"Arn": "[^"]+"|"Arn": "arn:aws:iam::ACCOUNT-ID-REDACTED:user/'"$USERNAME"'"|' \
+  -e 's|arn:aws:iam::[0-9]+:|arn:aws:iam::ACCOUNT-ID:|'
 
 echo "🔐 Attaching MFA enforcement policy: $POLICY_NAME"
 aws iam put-user-policy \
@@ -32,11 +26,16 @@ aws iam put-user-policy \
   --policy-name "$POLICY_NAME" \
   --policy-document file://mfa_enforced_policy.json
 
-echo "🔑 Creating login profile (temporary password)"
-aws iam create-login-profile \
+echo "🔑 Creating login profile (temporary password)..."
+CREATE_PROFILE_OUTPUT=$(aws iam create-login-profile \
   --user-name "$USERNAME" \
-  --password 'TempPass123!' \
-  --password-reset-required
+  --password "TempPass123!" \
+  --password-reset-required)
+
+echo "$CREATE_PROFILE_OUTPUT" | sed -E \
+  -e 's|"UserName": "[^"]+"|"UserName": "'"$USERNAME"'"|' \
+  -e 's|"CreateDate": "[^"]+"|"CreateDate": "REDACTED"|' \
+  -e 's|"PasswordResetRequired": [^}]+|"PasswordResetRequired": true|'
 
 echo "✅ Done. User '$USERNAME' created and policy '$POLICY_NAME' applied."
 
