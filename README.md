@@ -47,8 +47,8 @@ This script automates the following:
 🔹 Create user
 
 ./create_test_user.sh yourusername
-
-🔹 Attach MFA-required policy
+ 🔹 Ensure test user has iam:ChangePassword permission for full login demo
+ 🔹 Attach MFA-required policy
 
 aws iam put-user-policy \
   --user-name yourusername \
