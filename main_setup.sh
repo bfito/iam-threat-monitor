@@ -33,6 +33,12 @@ CREATE_PROFILE_OUTPUT=$(aws iam create-login-profile \
   --password "$TEMP_PASSWORD" \
   --password-reset-required)
 
+echo "🔐 Attaching ChangePassword policy..."
+aws iam put-user-policy \
+  --user-name "$USERNAME" \
+  --policy-name "ChangePasswordPolicy-$USERNAME" \
+  --policy-document file://change_password_policy.json
+
 # Redact sensitive login profile info
 echo "$CREATE_PROFILE_OUTPUT" | sed -E \
   -e 's|"UserName": "[^"]+"|"UserName": "'"$USERNAME"'"|' \
