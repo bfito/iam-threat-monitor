@@ -1,18 +1,31 @@
 #!/bin/bash
 set -e
+
+# Load helper and validate input
 source "${BASH_SOURCE%/*}/user_check.sh"
 require_username "$1"
 
+USERNAME="$1"
+
+# Generate secure random temp password
 TEMP_PASSWORD=$(openssl rand -base64 12)
 
-CREATE_PROFILE_OUTPUT=$(aws iam create-login-profile \
-  --user-name "$USERNAME" \
-  --password "$TEMP_PASSWORD" \
-  --password-reset-required)
+# Check if the login profile already exists
+if aws iam get-login-profile --user-name "$USERNAME" &>/dev/null; then
+  echo "⚠️ Login profile already exists for '$USERNAME'. Skipping password creation."
+else
+  echo "🔐 Creating login profile for '$USERNAME'..."
 
-echo "$CREATE_PROFILE_OUTPUT" | sed -E \
-  -e 's|"UserName": "[^"]+"|"UserName": "'"$USERNAME"'"|' \
-  -e 's|"CreateDate": "[^"]+"|"CreateDate": "REDACTED"|' \
-  -e 's|"PasswordResetRequired": [^}]+|"PasswordResetRequired": true|'
+  CREATE_PROFILE_OUTPUT=$(aws iam create-login-profile \
+    --user-name "$USERNAME" \
+    --password "$TEMP_PASSWORD" \
+    --password-reset-required)
 
-echo "🔐 Temporary password for '$USERNAME': $TEMP_PASSWORD"
+  # Redact sensitive parts from output for logging or script display
+  echo "$CREATE_PROFILE_OUTPUT" | sed -E \
+    -e 's|"UserName": "[^"]+"|"UserName": "'"$USERNAME"'"|' \
+    -e 's|"CreateDate": "[^"]+"|"CreateDate": "REDACTED"|' \
+    -e 's|"PasswordResetRequired": [^}]+|"PasswordResetRequired": true|'
+
+  echo "✅ Temporary password for '$USERNAME': $TEMP_PASSWORD"
+fi

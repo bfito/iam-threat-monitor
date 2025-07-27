@@ -2,18 +2,22 @@
   "Version": "2012-10-17",
   "Statement": [
     {
-      "Sid": "AllowAllUsersToListAccounts",
+      "Sid": "AllowUserListing",
       "Effect": "Allow",
-      "Action": ["iam:ListAccountAliases", "iam:ListUsers"],
+      "Action": [
+        "iam:ListAccountAliases",
+        "iam:ListUsers"
+      ],
       "Resource": "*"
     },
     {
-      "Sid": "BlockMostAccessWithoutMFA",
+      "Sid": "DenyAllButMFAAndPasswordChangeWithoutMFA",
       "Effect": "Deny",
       "NotAction": [
+        "iam:ChangePassword",
+        "iam:GetUser",
         "iam:CreateVirtualMFADevice",
         "iam:EnableMFADevice",
-        "iam:GetUser",
         "iam:ListMFADevices",
         "iam:ListUsers",
         "iam:ListVirtualMFADevices"
