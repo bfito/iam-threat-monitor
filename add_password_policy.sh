@@ -6,6 +6,6 @@ require_username "$1"
 aws iam put-user-policy \
   --user-name "$USERNAME" \
   --policy-name "AllowPasswordChange" \
-  --policy-document file://change_password_policy.json
+  --policy-document file://policies/change_password_policy.json
 
 echo "✅ ChangePassword policy attached to $USERNAME"
