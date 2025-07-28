@@ -3,8 +3,9 @@ set -e
 
 RULE_NAME="ConsoleLoginWithoutMFA"
 EVENT_PATTERN_FILE="eventbridge_rule_console_login.json"
+LOG_GROUP_NAME="/aws/events/NonMFAConsoleLogins"
 
-# Check if the EventBridge rule already exists
+# Create EventBridge rule if it doesn't exist
 if aws events list-rules --name-prefix "$RULE_NAME" | grep -q "$RULE_NAME"; then
   echo "ℹ️  EventBridge rule '$RULE_NAME' already exists. Skipping creation."
 else
@@ -14,12 +15,10 @@ else
     --event-pattern "file://$EVENT_PATTERN_FILE" \
     --event-bus-name default)
 
-  # Sanitize and display output (e.g., hide account number in ARN)
-  if [[ -f "$(dirname "$0")/sanitize_output.sh" ]]; then
-    echo "$RULE_OUTPUT" | "$(dirname "$0")/sanitize_output.sh"
+  if [[ -f "$(dirname "$0")/run_sanitized.sh" ]]; then
+    echo "$RULE_OUTPUT" | "$(dirname "$0")/run_sanitized.sh"
   else
-    echo "$RULE_OUTPUT"  # fallback if sanitize script is missing
+    echo "$RULE_OUTPUT"
   fi
-
   echo "✅ EventBridge rule created successfully."
 fi
