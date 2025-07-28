@@ -9,5 +9,5 @@ if aws iam get-user --user-name "$USERNAME" &>/dev/null; then
 else
     echo "🔧 Creating IAM user: $USERNAME..."
     CREATE_USER_OUTPUT=$(aws iam create-user --user-name "$USERNAME")
-    echo "$CREATE_USER_OUTPUT" | ./run_sanitized.sh
+    echo "$CREATE_USER_OUTPUT" | ./util/run_sanitized.sh
 fi

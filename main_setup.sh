@@ -2,6 +2,7 @@
 set -e
 source "./scripts/iam/user_check.sh"
 require_username "$1"
+USERNAME="$1"
 
 echo "🔧 Creating IAM user..."
 ./scripts/iam/create_user.sh "$USERNAME"
