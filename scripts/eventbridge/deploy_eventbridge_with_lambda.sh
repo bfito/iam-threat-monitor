@@ -10,7 +10,7 @@ DIR="$(dirname "$0")"
 "$DIR/create_eventbridge_rule.sh"
 
 # 2. Zip Lambda and deploy
-"$DIR/../lambda/zip_lambda.sh"
+"$DIR/../util/zip_lambda.sh"
 "$DIR/../lambda/create_lambda.sh"
 
 # 3. Attach permissions

@@ -1,92 +1,110 @@
-# AWS IAM Automation & Threat Detection (MFA + EventBridge)
+# IAM Threat Monitor Demo
 
-## 🔍 Overview
-This project demonstrates how to:
+This project sets up a secure IAM environment in AWS with enforced password policies and login monitoring using EventBridge and Lambda. It includes scripts to automate setup and teardown for safe testing.
 
-🔹 Set up secure IAM users and groups  
-🔹 Enforce MFA using policy conditions  
-🔹 Monitor login events via EventBridge  
-🔹 Automate IAM setup using AWS CLI  
-🔹 Stay entirely within AWS Free Tier  
+## 📦 Features
 
----
+- ✅ Password policy enforcement (complexity, expiration)
+- ✅ IAM user creation with temporary password
+- ✅ EventBridge rule to detect non-MFA console logins
+- ✅ Lambda function to log those events
+- ✅ CloudWatch Logs group to store the events
+- ✅ Fully scriptable setup and cleanup
 
-## 📁 Files
+## 📁 File Structure
 
-🔹 `mfa_enforced_policy.json` – Denies all actions unless MFA is present  
-🔹 `create_user.sh` – Bash script to create and assign users  
-🔹 `eventbridge_rule_console_login.json` – EventBridge rule for detecting console logins without MFA  
-🔹 `main_setup.sh` – Automates full IAM + policy + alert setup  
-🔹 `delete_test_user.sh` – Safely removes IAM user and associated policies  
+```
+.
+├── main_setup.sh
+├── policies
+│   ├── change_password_policy.json
+│   └── eventbridge_rule_console_login.json
+├── scripts
+│   ├── eventbridge
+│   │   ├── attach_lambda_permissions.sh
+│   │   ├── create_eventbridge_rule.sh
+│   │   ├── create_log_group.sh
+│   │   └── deploy_eventbridge_with_lambda.sh
+│   ├── iam
+│   │   ├── add_password_policy.sh
+│   │   ├── create_user.sh
+│   │   ├── set_temp_password.sh
+│   │   └── user_check.sh
+│   └── lambda
+│       ├── create_lambda.sh
+│       └── index.js
+├── util
+│   ├── run_sanitized.sh
+│   └── zip_lambda.sh
+└── README.md
+```
 
----
+## 🚀 How to Run
 
-## 🧰 Setup Instructions
+1. Make sure your AWS CLI is configured and has sufficient permissions.
 
-### 🔧 Prerequisites
-
-🔹 AWS CLI installed and configured with admin-level permissions  
-🔹 AWS account with CloudTrail and EventBridge enabled  
-🔹 Bash-compatible terminal (Linux, macOS, WSL, etc.)  
-
----
-
-### ✅ Recommended Quick Start (All-in-One)
+2. Run the setup script:
 
 ```bash
 chmod +x main_setup.sh
-./main_setup.sh
+./main_setup.sh demo-user
+```
 
-This script automates the following:
+This will:
+- Apply IAM password policy
+- Create IAM user `demo-user`
+- Set a temporary password
+- Deploy EventBridge rule to catch non-MFA logins
+- Create CloudWatch log group
+- Zip, deploy, and connect a Lambda function that logs the login event
 
-🔹 Creates a test IAM user
-🔹 Attaches the MFA-required policy
-🔹 Creates an EventBridge rule to detect logins without MFA
-🪛 Manual Setup (Optional: Step-by-Step)
+## 🔍 How to View Login Logs
 
-🔹 Create user
+Logins **without MFA** will trigger the EventBridge rule, which triggers the Lambda. That Lambda logs the raw event to **CloudWatch Logs** under:
 
-./create_test_user.sh yourusername
- 🔹 Ensure test user has iam:ChangePassword permission for full login demo
- 🔹 Attach MFA-required policy
+```
+/aws/lambda/LogMFAEventsLambda
+```
 
-aws iam put-user-policy \
-  --user-name yourusername \
-  --policy-name EnforceMFA \
-  --policy-document file://mfa_enforced_policy.json
+To view the logs:
+```bash
+aws logs describe-log-groups
+aws logs get-log-events --log-group-name /aws/lambda/LogMFAEventsLambda --log-stream-name <YOUR_STREAM_NAME>
+```
+Or view in the AWS Console under **CloudWatch > Log groups > /aws/lambda/LogMFAEventsLambda**
 
-🔹 Set up EventBridge rule
+---
 
-aws events put-rule \
-  --name ConsoleLoginWithoutMFA \
-  --event-pattern file://eventbridge_rule_console_login.json \
-  --event-bus-name default
+## 🧹 Cleanup
+To remove all resources created by this project, run:
+```bash
+./cleanup.sh
+```
 
-🔹 (Optional) Link the rule to an SNS topic to get email alerts
-🧹 Cleanup
+This will delete:
+- IAM user
+- Log groups
+- Lambda function
+- EventBridge rule and target
+- IAM role used by Lambda
 
-To delete the user and related resources:
+## 💸 Cost
+Everything used in this project is eligible for **AWS Free Tier**:
+- EventBridge rules: free for low volume
+- CloudTrail (used behind the scenes): management events are free
+- Lambda: 1M invocations/month free
+- CloudWatch Logs: 5GB/month free
 
-./delete_test_user.sh yourusername
+## 🛡️ Security
+- IAM user has no admin rights by default — adjust policies as needed.
+- You can audit events via CloudTrail for extra insight.
 
-💡 Learning Highlights
+## ✅ Notes
+- All commands are region-agnostic unless specified otherwise.
+- Scripts are modular for reuse.
 
-🔹 IAM policy logic with MFA enforcement
-🔹 AWS login monitoring with EventBridge
-🔹 Shell scripting with AWS CLI
-🔹 IAM lifecycle automation and cleanup
-🔹 Studied the differences between IAM policy types via CLI:    
-    🔹 aws iam put-user-policy → Inline policy (user-only)
-    🔹 aws iam create-policy → Reusable customer-managed policy
-    🔹 aws iam attach-user-policy → Attaches a managed policy to a user
-    🔹 aws iam list-policies --scope AWS → Lists AWS-managed (read-only) policies
-    🔹 --permissions-boundary → Sets permission limits using a managed policy
+---
 
-📘 Future Plans
+Feel free to fork, improve, and contribute.
 
-🔹 Rebuild this using Terraform for full infrastructure-as-code
-🔹 Extend with CloudWatch logs or SNS alerts
-🔹 Add support for group-based policy enforcement
-📜 License
-
-MIT
+MIT License © JP Zune
