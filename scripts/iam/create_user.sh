@@ -1,13 +1,26 @@
 #!/bin/bash
 set -e
-source "${BASH_SOURCE%/*}/user_check.sh"
-require_username "$1"
 
+require_username "$1"
 USERNAME="$1"
-if aws iam get-user --user-name "$USERNAME" &>/dev/null; then
-    echo "⚠️ User '$USERNAME' already exists. Skipping creation."
-else
-    echo "🔧 Creating IAM user: $USERNAME..."
-    CREATE_USER_OUTPUT=$(aws iam create-user --user-name "$USERNAME")
-    echo "$CREATE_USER_OUTPUT" | ./util/run_sanitized.sh
+TEST_GROUP="IAMThreatMonitorTestGroup"
+
+# Check if group exists; if not, create it
+if ! aws iam get-group --group-name "$TEST_GROUP" &>/dev/null; then
+  echo "📁 Creating test group: $TEST_GROUP"
+  aws iam create-group --group-name "$TEST_GROUP"
 fi
+
+# Create the user
+aws iam create-user --user-name "$USERNAME"
+
+# Optional: tag the user
+aws iam tag-user --user-name "$USERNAME" \
+  --tags Key=Purpose,Value=IAMThreatMonitorTest
+
+# Add user to the test group
+aws iam add-user-to-group \
+  --user-name "$USERNAME" \
+  --group-name "$TEST_GROUP"
+
+echo "✅ User created and added to test group: $USERNAME"

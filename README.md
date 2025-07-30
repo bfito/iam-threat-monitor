@@ -4,6 +4,7 @@ This project sets up a secure IAM environment in AWS with enforced password poli
 
 ## 📦 Features
 
+- ✅ Creates an IAM group to collect all test users in one place.
 - ✅ Password policy enforcement (complexity, expiration)
 - ✅ IAM user creation with temporary password
 - ✅ EventBridge rule to detect non-MFA console logins
@@ -52,7 +53,7 @@ chmod +x main_setup.sh
 
 This will:
 - Apply IAM password policy
-- Create IAM user `demo-user`
+- Create IAM user with tags for tracking and group for permissions.
 - Set a temporary password
 - Deploy EventBridge rule to catch non-MFA logins
 - Create CloudWatch log group
@@ -102,6 +103,8 @@ Everything used in this project is eligible for **AWS Free Tier**:
 ## ✅ Notes
 - All commands are region-agnostic unless specified otherwise.
 - Scripts are modular for reuse.
+- https://policysim.aws.amazon.com/home/index.jsp?# for policy testing.
+
 
 ---
 
