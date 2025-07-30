@@ -103,7 +103,7 @@ Everything used in this project is eligible for **AWS Free Tier**:
 ## ✅ Notes
 - All commands are region-agnostic unless specified otherwise.
 - Scripts are modular for reuse.
-- https://policysim.aws.amazon.com/home/index.jsp?# for policy testing.
+- AWS Policy Simulator: Used to safely test and validate IAM policies before applying them in production. Helps ensure least-privilege access and avoid permission misconfigurations. https://policysim.aws.amazon.com/home/index.jsp?#
 
 
 ---
