@@ -2,8 +2,12 @@
 
 # Read from stdin and redact sensitive fields
 sed -E \
-  -e 's|"UserId": "[^"]+"|"UserId": "REDACTED"|' \
-  -e 's|"Arn": "[^"]+"|"Arn": "arn:aws:iam::ACCOUNT-ID-REDACTED:user/REDACTED"|' \
-  -e 's|arn:aws:iam::[0-9]+:|arn:aws:iam::ACCOUNT-ID:|' \
+  -e 's|arn:aws:[^"]+|arn:aws:REDACTED|g' \
+  -e 's|"UserName": "[^"]+"|"UserName": "REDACTED"|' \
   -e 's|"CreateDate": "[^"]+"|"CreateDate": "REDACTED"|' \
-  -e 's|"RuleArn": "arn:aws:events:[^"]+"|"RuleArn": "arn:aws:events:REGION:ACCOUNT-ID-REDACTED:rule/REDACTED"|'
+  -e 's|"RevisionId": "[^"]+"|"RevisionId": "REDACTED"|' \
+  -e 's|"AccessKeyId": "[^"]+"|"AccessKeyId": "REDACTED"|' \
+  -e 's|"SecretAccessKey": "[^"]+"|"SecretAccessKey": "REDACTED"|' \
+  -e 's|"Account": "[0-9]+"|"Account": "REDACTED"|' \
+  -e 's|"Resource": "arn:[^"]+"|"Resource": "REDACTED"|' \
+  -e 's|arn:aws:iam::[0-9]+:user/[^"]+|REDACTED_USER|g'
