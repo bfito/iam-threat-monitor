@@ -8,7 +8,7 @@ require_username "$1"
 USERNAME="$1"
 
 # Generate secure random temp password
-TEMP_PASSWORD=$(openssl rand -base64 12)
+TEMP_PASSWORD="$(openssl rand -base64 16 | tr -dc 'A-Za-z0-9!@#%&*_' | head -c14)A1!"
 
 # Check if the login profile already exists
 if aws iam get-login-profile --user-name "$USERNAME" &>/dev/null; then

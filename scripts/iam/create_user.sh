@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+source "${BASH_SOURCE%/*}/user_check.sh"
 
 require_username "$1"
 USERNAME="$1"

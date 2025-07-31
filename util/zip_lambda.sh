@@ -1,11 +1,14 @@
-### scripts/lambda/zip_lambda.sh
 #!/bin/bash
 set -e
 
-ZIP_NAME="lambda_function.zip"
 echo "📦 Zipping Lambda function..."
-cd "$(dirname "$0")"
-zip -r "$ZIP_NAME" index.js
-cd -
-echo "✅ Lambda zipped as $ZIP_NAME"
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+LAMBDA_SRC="$REPO_ROOT/scripts/lambda"
+ZIP_PATH="$LAMBDA_SRC/lambda_function.zip"
+
+cd "$LAMBDA_SRC"
+zip -q "$ZIP_PATH" index.js
+
+echo "✅ Lambda function zipped: $ZIP_PATH"

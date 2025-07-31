@@ -2,7 +2,9 @@
 set -e
 
 RULE_NAME="ConsoleLoginWithoutMFA"
-EVENT_PATTERN_FILE="eventbridge_rule_console_login.json"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+EVENT_PATTERN_FILE="$REPO_ROOT/policies/eventbridge_rule_console_login.json"
 LOG_GROUP_NAME="/aws/events/NonMFAConsoleLogins"
 
 # Create EventBridge rule if it doesn't exist
@@ -15,8 +17,8 @@ else
     --event-pattern "file://$EVENT_PATTERN_FILE" \
     --event-bus-name default)
 
-  if [[ -f "$(dirname "$0")/run_sanitized.sh" ]]; then
-    echo "$RULE_OUTPUT" | "$(dirname "$0")/run_sanitized.sh"
+  if [[ -f "$REPO_ROOT/util/run_sanitized.sh" ]]; then
+    echo "$RULE_OUTPUT" | "$REPO_ROOT/util/run_sanitized.sh"
   else
     echo "$RULE_OUTPUT"
   fi

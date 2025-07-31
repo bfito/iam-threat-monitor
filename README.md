@@ -15,30 +15,50 @@ This project sets up a secure IAM environment in AWS with enforced password poli
 ## 📁 File Structure
 
 ```
-.
-├── main_setup.sh
-├── policies
-│   ├── change_password_policy.json
-│   └── eventbridge_rule_console_login.json
-├── scripts
-│   ├── eventbridge
-│   │   ├── attach_lambda_permissions.sh
-│   │   ├── create_eventbridge_rule.sh
-│   │   ├── create_log_group.sh
-│   │   └── deploy_eventbridge_with_lambda.sh
-│   ├── iam
-│   │   ├── add_password_policy.sh
-│   │   ├── create_user.sh
-│   │   ├── set_temp_password.sh
-│   │   └── user_check.sh
-│   └── lambda
-│       ├── create_lambda.sh
-│       └── index.js
-├── util
-│   ├── run_sanitized.sh
-│   └── zip_lambda.sh
+iam-threat-monitor-main/
+├── main_setup.sh                 # Top-level setup runner
+├── policies/                    # IAM & EventBridge JSON definitions
+│   ├── change_password_policy.json
+│   └── eventbridge_rule_console_login.json
+├── scripts/
+│   ├── iam/                     # IAM logic (user, password, policy)
+│   ├── lambda/                  # index.js + create_lambda.sh
+│   └── eventbridge/             # Rule creation + Lambda hookup
+├── util/
+│   ├── cleanup/                 # delete_*.sh scripts + interactive_cleanup.sh
+│   ├── zip_lambda.sh            # zips lambda/index.js
+│   └── run_sanitized.sh         # redacts output
 └── README.md
+
 ```
+## 🔧 Tool Behavior Flow (Main Script)
+
+When you run ./main_setup.sh testuser:
+
+    ✅ Creates IAM test user (testuser)
+
+    ✅ Sets password, assigns policy
+
+    ✅ Adds user to isolated test group
+
+    ✅ Deploys EventBridge rule to detect console logins without MFA
+
+    ✅ Zips index.js into lambda_function.zip
+
+    ✅ Creates Lambda function and IAM execution role
+
+    ✅ Links Lambda to the EventBridge rule
+
+```
+## 🧰 Tools & Techniques Used
+
+Category	Tools/Approach
+Language	Bash
+AWS Services	IAM, Lambda, EventBridge, CloudWatch Logs
+Security	Password policy enforcement, MFA monitoring
+Logging	Sanitized output via run_sanitized.sh
+Scripting Best Practices	set -e, SCRIPT_DIR, REPO_ROOT, modular scripts
+Deployment	CLI-driven, modular, portable
 
 ## 🚀 How to Run
 
@@ -96,7 +116,14 @@ Everything used in this project is eligible for **AWS Free Tier**:
 - Lambda: 1M invocations/month free
 - CloudWatch Logs: 5GB/month free
 
-## 🛡️ Security
+##  🔐 Security Mindset & Best Practices You’ve Used
+
+✅ Password policy enforcement
+✅ MFA-based login monitoring
+✅ Role-based access separation
+✅ Logging without exposing secrets
+✅ Dedicated test group isolation for IAM users
+✅ Modular cleanup tooling (interactive_cleanup.sh + delete_*)
 - IAM user has no admin rights by default — adjust policies as needed.
 - You can audit events via CloudTrail for extra insight.
 
@@ -105,6 +132,14 @@ Everything used in this project is eligible for **AWS Free Tier**:
 - Scripts are modular for reuse.
 - AWS Policy Simulator: Used to safely test and validate IAM policies before applying them in production. Helps ensure least-privilege access and avoid permission misconfigurations. https://policysim.aws.amazon.com/home/index.jsp?#
 
+## 🟡 Remaining Gaps / Tweaks to Consider
+🔄 create_lamArea	Suggestion
+bda.sh	✅ Now fixed to use temp file for trust policy
+🔄 interactive_cleanup.sh	Show matching users before deletion (in progress)
+🗃 Resource tagging	Add tags for Lambda, IAM users, groups
+🔒 Least privilege	Limit policies for test group/Lambda role
+📜 README.md	Add usage instructions and visual diagrams
+🧪 Unit testing/mock mode	Optional: Add dry-run mode for scripts
 
 ---
 

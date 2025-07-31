@@ -1,20 +1,20 @@
-### scripts/eventbridge/deploy_eventbridge_with_lambda.sh (updated)
 #!/bin/bash
 set -e
 
 echo "🚀 Deploying EventBridge rule with Lambda target..."
 
-DIR="$(dirname "$0")"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 
 # 1. Create the rule
-"$DIR/create_eventbridge_rule.sh"
+"$SCRIPT_DIR/create_eventbridge_rule.sh"
 
 # 2. Zip Lambda and deploy
-"$DIR/../util/zip_lambda.sh"
-"$DIR/../lambda/create_lambda.sh"
+"$REPO_ROOT/util/zip_lambda.sh"
+"$REPO_ROOT/scripts/lambda/create_lambda.sh"
 
 # 3. Attach permissions
-"$DIR/attach_lambda_permissions.sh"
+"$SCRIPT_DIR/attach_lambda_permissions.sh"
 
 # 4. Add Lambda as target
 aws events put-targets \
