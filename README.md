@@ -1,6 +1,20 @@
+ _______ _  _  _ _______      _____ _______ _______      ______  _______ _______  _____ 
+ |_____| |  |  | |______        |   |_____| |  |  |      |     \ |______ |  |  | |     |
+ |     | |__|__| ______|      __|__ |     | |  |  |      |_____/ |______ |  |  | |_____|
+                                                                                        
+
 # IAM Threat Monitor Demo
 
 This project sets up a secure IAM environment in AWS with enforced password policies and login monitoring using EventBridge and Lambda. It includes scripts to automate setup and teardown for safe testing.
+
+## 🛠 You're Writing Infrastructure as Code Without a Framework
+
+You're doing it by hand using Bash and AWS CLI — no Terraform, CDK, or CloudFormation. That:
+
+-    Gives you control and learning 👏
+-    Adds complexity and friction 🧱
+-    Means you’re also doing your own debugging, path fixing, IAM logic, and error handling
+
 
 ## 📦 Features
 
@@ -145,4 +159,13 @@ bda.sh	✅ Now fixed to use temp file for trust policy
 
 Feel free to fork, improve, and contribute.
 
-MIT License © JP Zune
+MIT License © JP Zune🛠 You're Writing Infrastructure as Code Without a Framework
+
+You're doing it by hand using Bash and AWS CLI — no Terraform, CDK, or CloudFormation. That:
+
+    Gives you control and learning 👏
+
+    Adds complexity and friction 🧱
+
+    Means you’re also doing your own debugging, path fixing, IAM logic, and error handling
+

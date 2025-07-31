@@ -12,8 +12,12 @@ if ! aws iam get-group --group-name "$TEST_GROUP" &>/dev/null; then
   aws iam create-group --group-name "$TEST_GROUP"
 fi
 
-# Create the user
-aws iam create-user --user-name "$USERNAME"
+if aws iam get-user --user-name "$USERNAME" &>/dev/null; then
+  echo "ℹ️ IAM user '$USERNAME' already exists. Skipping creation."
+else
+  aws iam create-user --user-name "$USERNAME"
+  echo "✅ IAM user '$USERNAME' created."
+fi
 
 # Optional: tag the user
 aws iam tag-user --user-name "$USERNAME" \

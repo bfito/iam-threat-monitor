@@ -8,7 +8,7 @@ EVENT_PATTERN_FILE="$REPO_ROOT/policies/eventbridge_rule_console_login.json"
 LOG_GROUP_NAME="/aws/events/NonMFAConsoleLogins"
 
 # Create EventBridge rule if it doesn't exist
-if aws events list-rules --name-prefix "$RULE_NAME" | grep -q "$RULE_NAME"; then
+if aws events describe-rule --name "$RULE_NAME" &>/dev/null; then
   echo "ℹ️  EventBridge rule '$RULE_NAME' already exists. Skipping creation."
 else
   echo "📡 Creating EventBridge rule to detect logins without MFA..."
