@@ -22,7 +22,8 @@ run_and_redact() {
 }
 
 print_section "🔧 Creating IAM user"
-run_and_redact ./scripts/iam/create_user.sh "$USERNAME"
+# run_and_redact ./scripts/iam/create_user.sh "$USERNAME"
+./scripts/iam/create_user.sh "$USERNAME"
 
 print_section "🔐 Attaching ChangePassword policy"
 run_and_redact ./scripts/iam/add_password_policy.sh "$USERNAME"
