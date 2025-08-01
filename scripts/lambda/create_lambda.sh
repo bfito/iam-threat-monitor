@@ -63,4 +63,7 @@ else
   echo "✅ Lambda function '$FUNCTION_NAME' created successfully and is now being initialized by AWS."
 fi
 
+echo "🧪 Invoking test_lambda.sh to initialize logs..."
+"$(dirname "$0")/test_lambda.sh"
+
 echo "🏁 Lambda setup complete."
