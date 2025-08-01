@@ -12,23 +12,25 @@ echo ""
 
 set -e
 source "./scripts/iam/user_check.sh"
+source "./util/divider.sh"  # <-- Load your divider function
 require_username "$1"
 USERNAME="$1"
 
+# Centralized redaction wrapper
 run_and_redact() {
   "$@" 2>&1 | ./util/sanitize_output.sh
 }
 
-echo "🔧 Creating IAM user..."
+print_section "🔧 Creating IAM user"
 run_and_redact ./scripts/iam/create_user.sh "$USERNAME"
 
-echo "🔐 Attaching ChangePassword policy..."
+print_section "🔐 Attaching ChangePassword policy"
 run_and_redact ./scripts/iam/add_password_policy.sh "$USERNAME"
 
-echo "🔑 Setting temporary password..."
+print_section "🔑 Setting temporary password"
 run_and_redact ./scripts/iam/set_temp_password.sh "$USERNAME"
 
-echo "🚀 Deploying EventBridge rule..."
+print_section "🚀 Deploying EventBridge rule"
 run_and_redact ./scripts/eventbridge/deploy_eventbridge_with_lambda.sh
 
-echo "✅ Setup complete for user '$USERNAME'."
+print_section "✅ Setup complete for user '$USERNAME'"
