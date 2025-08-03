@@ -26,10 +26,12 @@ print_section "🔧 Creating IAM user"
 ./scripts/iam/create_user.sh "$USERNAME"
 
 print_section "🔐 Attaching ChangePassword policy"
-run_and_redact ./scripts/iam/add_password_policy.sh "$USERNAME"
+run_and_redact ./scripts/iam/add_password_policy.sh "$USERNAME" "IAMThreatMonitorTestGroup"
 
 print_section "🔑 Setting temporary password"
 run_and_redact ./scripts/iam/set_temp_password.sh "$USERNAME"
+
+
 
 print_section "🚀 Deploying EventBridge rule"
 run_and_redact ./scripts/eventbridge/deploy_eventbridge_with_lambda.sh
