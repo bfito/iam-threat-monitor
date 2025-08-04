@@ -45,13 +45,13 @@ iam-threat-monitor-main/
 ## 🔧 Tool Behavior Flow (Main Script)
 
 When you run ./main_setup.sh testuser:x
-    ✅ Creates IAM test user (testuser)
-    ✅ Sets password, assigns policy
-    ✅ Adds user to isolated test group
-    ✅ Deploys EventBridge rule to detect console logins without MFA
-    ✅ Zips index.js into lambda_function.zip
-    ✅ Creates Lambda function and IAM execution role
-    ✅ Links Lambda to the EventBridge rule
+- ✅ Creates IAM test user (testuser)
+- ✅ Sets password, assigns policy
+- ✅ Adds user to isolated test group
+- ✅ Deploys EventBridge rule to detect console logins without MFA
+- ✅ Zips index.js into lambda_function.zip
+- ✅ Creates Lambda function and IAM execution role
+- ✅ Links Lambda to the EventBridge rule
 
 
 ## 🧰 Tools & Techniques Used
@@ -122,14 +122,14 @@ Everything used in this project is eligible for **AWS Free Tier**:
 - CloudWatch Logs: 5GB/month free
 
 ##  🔐 Security Mindset & Best Practices
-✅ Password policy enforcement
-✅ MFA-based login monitoring
-✅ Role-based access separation
-✅ Logging without exposing secrets
-✅ Dedicated test group isolation for IAM users
-✅ Modular cleanup tooling (interactive_cleanup.sh + delete_*)
-- IAM user has no admin rights by default — adjust policies as needed.
-- You can audit events via CloudTrail for extra insight.
+- ✅ Password policy enforcement
+- ✅ MFA-based login monitoring
+- ✅ Role-based access separation
+- ✅ Logging without exposing secrets
+- ✅ Dedicated test group isolation for IAM users
+- ✅ Modular cleanup tooling (interactive_cleanup.sh + delete_*)
+- ✅ IAM user has no admin rights by default — adjust policies as needed.
+- ✅ You can audit events via CloudTrail for extra insight.
 
 ## ✅ Notes
 - All commands are region-agnostic unless specified otherwise.
