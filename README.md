@@ -22,6 +22,7 @@ You're doing it by hand using Bash and AWS CLI — no Terraform, CDK, or CloudFo
 - ✅ Lambda function to log those events
 - ✅ CloudWatch Logs group to store the events
 - ✅ Fully scriptable setup and cleanup
+- ✅ Lambda function to log those events with built-in testing simulation
 
 ## 📁 File Structure
 
@@ -44,32 +45,26 @@ iam-threat-monitor-main/
 ```
 ## 🔧 Tool Behavior Flow (Main Script)
 
-When you run ./main_setup.sh testuser:
-
+When you run ./main_setup.sh testuser:x
     ✅ Creates IAM test user (testuser)
-
     ✅ Sets password, assigns policy
-
     ✅ Adds user to isolated test group
-
     ✅ Deploys EventBridge rule to detect console logins without MFA
-
     ✅ Zips index.js into lambda_function.zip
-
     ✅ Creates Lambda function and IAM execution role
-
     ✅ Links Lambda to the EventBridge rule
 
 ```
 ## 🧰 Tools & Techniques Used
 
-Category	Tools/Approach
-Language	Bash
-AWS Services	IAM, Lambda, EventBridge, CloudWatch Logs
-Security	Password policy enforcement, MFA monitoring
-Logging	Sanitized output via run_sanitized.sh
-Scripting Best Practices	set -e, SCRIPT_DIR, REPO_ROOT, modular scripts
-Deployment	CLI-driven, modular, portable
+| Category | Tools/Approach |
+|----------|----------------|
+| Language | Bash |
+| AWS Services | IAM, Lambda, EventBridge, CloudWatch Logs |
+| Security | Password policy enforcement, MFA monitoring |
+| Logging | Sanitized output via run_sanitized.sh |
+| Scripting Best Practices | set -e, SCRIPT_DIR, REPO_ROOT, modular scripts |
+| Deployment | CLI-driven, modular, portable |
 
 ## 🚀 How to Run
 
@@ -127,8 +122,7 @@ Everything used in this project is eligible for **AWS Free Tier**:
 - Lambda: 1M invocations/month free
 - CloudWatch Logs: 5GB/month free
 
-##  🔐 Security Mindset & Best Practices You’ve Used
-
+##  🔐 Security Mindset & Best Practices
 ✅ Password policy enforcement
 ✅ MFA-based login monitoring
 ✅ Role-based access separation
@@ -157,12 +151,4 @@ bda.sh	✅ Now fixed to use temp file for trust policy
 Feel free to fork, improve, and contribute.
 
 MIT License © JP Zune🛠 You're Writing Infrastructure as Code Without a Framework
-
-You're doing it by hand using Bash and AWS CLI — no Terraform, CDK, or CloudFormation. That:
-
-    Gives you control and learning 👏
-
-    Adds complexity and friction 🧱
-
-    Means you’re also doing your own debugging, path fixing, IAM logic, and error handling
 
