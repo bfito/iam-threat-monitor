@@ -2,15 +2,14 @@ AWS IAM DEMO
 
 # IAM Threat Monitor Demo
 
-This project sets up a secure IAM environment in AWS with enforced password policies and login monitoring using EventBridge and Lambda. It includes scripts to automate setup and teardown for safe testing.
+This project sets up a secure IAM environment in AWS with enforced password policies and login monitoring using EventBridge and Lambda. It includes scripts to automate setup and teardown for safe testing. 
 
-## 🛠 You're Writing Infrastructure as Code Without a Framework
+## 🛠 Infrastructure as Code Without a Framework
 
-You're doing it by hand using Bash and AWS CLI — no Terraform, CDK, or CloudFormation. That:
-
+Doing it by hand using Bash and AWS CLI — no Terraform, CDK, or CloudFormation.
 -    Gives you control and learning 👏
 -    Adds complexity and friction 🧱
--    Means you’re also doing your own debugging, path fixing, IAM logic, and error handling
+-    Means you’re also doing your own debugging, path fixing, IAM logic, and error handling.
 
 
 ## 📦 Features
@@ -41,8 +40,8 @@ iam-threat-monitor-main/
 │   ├── zip_lambda.sh            # zips lambda/index.js
 │   └── run_sanitized.sh         # redacts output
 └── README.md
-
 ```
+
 ## 🔧 Tool Behavior Flow (Main Script)
 
 When you run ./main_setup.sh testuser:x
@@ -54,7 +53,7 @@ When you run ./main_setup.sh testuser:x
     ✅ Creates Lambda function and IAM execution role
     ✅ Links Lambda to the EventBridge rule
 
-```
+
 ## 🧰 Tools & Techniques Used
 
 | Category | Tools/Approach |
@@ -137,18 +136,9 @@ Everything used in this project is eligible for **AWS Free Tier**:
 - Scripts are modular for reuse.
 - AWS Policy Simulator: Used to safely test and validate IAM policies before applying them in production. Helps ensure least-privilege access and avoid permission misconfigurations. https://policysim.aws.amazon.com/home/index.jsp?#
 
-## 🟡 Remaining Gaps / Tweaks to Consider
-🔄 create_lamArea	Suggestion
-bda.sh	✅ Now fixed to use temp file for trust policy
-🔄 interactive_cleanup.sh	Show matching users before deletion (in progress)
-🗃 Resource tagging	Add tags for Lambda, IAM users, groups
-🔒 Least privilege	Limit policies for test group/Lambda role
-📜 README.md	Add usage instructions and visual diagrams
-🧪 Unit testing/mock mode	Optional: Add dry-run mode for scripts
-
 ---
 
 Feel free to fork, improve, and contribute.
 
-MIT License © JP Zune🛠 You're Writing Infrastructure as Code Without a Framework
+MIT License © JP Zune
 
